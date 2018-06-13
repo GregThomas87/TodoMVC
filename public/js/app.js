@@ -120,8 +120,8 @@ jQuery(function ($) {
       return todos.findIndex(todo => todo.id === id);
 		},
 		create(e) {
-			var $input = $(e.target);
-			var val = $input.val().trim();
+			let input = e.target;
+			let val = input.value.trim();
 
 			if (e.which !== ENTER_KEY || !val) {
 				return;
@@ -133,7 +133,7 @@ jQuery(function ($) {
 				completed: false
 			});
 
-			$input.val('');
+			input.value = '';
 
 			this.render();
 		},
@@ -143,31 +143,36 @@ jQuery(function ($) {
 			this.render();
 		},
 		edit(e) {
-			var $input = $(e.target).closest('li').addClass('editing').find('.edit');
-			$input.focus();
+			let li = e.target.closest('li');
+			li.classList.add('editing');
+			for(let i = 0; i < li.children.length; i++) {
+				if(li.children[i].className === 'edit') {
+					li.children[i].focus();
+					break;
+				}
+			}
 		},
 		editKeyup(e) {
-      let $target = $(e.target);
+      let target = e.target;
       switch (e.which) {
         case ESCAPE_KEY:
-          $target.data('abort', true);
+          target.setAttribute('abort', true);
         case ENTER_KEY:
-          $target.blur();
+          target.blur();
           break;
-      }
+  		}
 		},
 		update(e) {
-			var el = e.target;
-			var $el = $(el);
-			var val = $el.val().trim();
+			let el = e.target;
+			let val = el.value.trim();
 
 			if (!val) {
 				this.destroy(e);
 				return;
 			}
 
-			if ($el.data('abort')) {
-				$el.data('abort', false);
+			if (el.getAttribute('abort')) {
+				el.setAttribute('abort', false);
 			} else {
 				this.todos[this.indexFromEl(el)].title = val;
 			}
