@@ -53,7 +53,7 @@ let App = {
 		document.getElementById('new-todo').addEventListener('keyup', (e) => this.create(e));
 		document.getElementById('toggle-all').addEventListener('change', (e) => this.toggleAll(e));
 		document.getElementById('footer').addEventListener('click', (e) => { 
-			if(e.target.id === 'clear-completed') {
+			if(e.target && e.target.id === 'clear-completed') {
 				this.destroyCompleted(e);
 			}
 		});
@@ -61,31 +61,31 @@ let App = {
 		let todoList = document.getElementById('todo-list');
 		
 		todoList.addEventListener('change', (e) => {
-			if(e.target.classList.contains('toggle')) {
+			if(e.target && e.target.classList.contains('toggle')) {
 				this.toggle(e);
 			}
 		});
 		
 		todoList.addEventListener('dblclick', (e) => {
-			if(e.target.nodeName === 'LABEL') {
+			if(e.target && e.target.nodeName === 'LABEL') {
 				this.edit(e);
 			}
 		});
 		
 		todoList.addEventListener('keyup', (e) => {
-			if(e.target.classList.contains('edit')) {
+			if(e.target && e.target.classList.contains('edit')) {
 				this.editKeyup(e);
 			}
 		});
 		
 		todoList.addEventListener('focusout', (e) => {
-			if(e.target.classList.contains('edit')) {
+			if(e.target && e.target.classList.contains('edit')) {
 				this.update(e);
 			}
 		});
 		
 		todoList.addEventListener('click', (e) => {
-			if(e.target.classList.contains('destroy')) {
+			if(e.target && e.target.classList.contains('destroy')) {
 				this.destroy(e);
 			}
 		});
@@ -93,7 +93,9 @@ let App = {
 	render() {
 		let todos = this.getFilteredTodos();
 		document.getElementById('todo-list').innerHTML = this.todoTemplate(todos);
-		if(todos.length > 0) { document.getElementById('main').style.display = 'block' }
+		if(todos.length > 0) { 
+			document.getElementById('main').style.display = 'block';
+		}
 		document.getElementById('toggle-all').checked = (this.getActiveTodos().length === 0);
 		this.renderFooter();
 		document.getElementById('new-todo').focus();
