@@ -67,7 +67,7 @@ let App = {
 		});
 		
 		todoList.addEventListener('dblclick', (e) => {
-			if(e.target.tagName === 'LABEL') {
+			if(e.target.nodeName === 'LABEL') {
 				this.edit(e);
 			}
 		});
