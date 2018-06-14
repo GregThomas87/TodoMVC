@@ -50,24 +50,50 @@ let App = {
 		}).init('/all');
 	},
 	bindEvents: function() {
-		document.getElementById('new-todo').addEventListener('keyup', this.create.bind(this));
-		document.getElementById('toggle-all').addEventListener('change', this.toggleAll.bind(this));
-		document.getElementById('footer').addEventListener('click', this.destroyCompleted.bind(this));
+		document.getElementById('new-todo').addEventListener('keyup', (e) => this.create(e));
+		document.getElementById('toggle-all').addEventListener('change', (e) => this.toggleAll(e));
+		document.getElementById('footer').addEventListener('click', (e) => { 
+			if(e.target.id === 'clear-completed') {
+				this.destroyCompleted(e);
+			}
+		});
+		
 		let todoList = document.getElementById('todo-list');
-		todoList.addEventListener('change', this.toggle.bind(this));
-		todoList.addEventListener('dblclick', this.edit.bind(this));
-		todoList.addEventListener('keyup', this.editKeyup.bind(this))
-		todoList.addEventListener('focusout', this.update.bind(this))
-		todoList.addEventListener('click', function(e) {
+		
+		todoList.addEventListener('change', (e) => {
+			if(e.target.classList.contains('toggle')) {
+				this.toggle(e);
+			}
+		});
+		
+		todoList.addEventListener('dblclick', (e) => {
+			if(e.target.tagName === 'LABEL') {
+				this.edit(e);
+			}
+		});
+		
+		todoList.addEventListener('keyup', (e) => {
+			if(e.target.classList.contains('edit')) {
+				this.editKeyup(e);
+			}
+		});
+		
+		todoList.addEventListener('focusout', (e) => {
+			if(e.target.classList.contains('edit')) {
+				this.update(e);
+			}
+		});
+		
+		todoList.addEventListener('click', (e) => {
 			if(e.target.classList.contains('destroy')) {
 				this.destroy(e);
 			}
-		}.bind(this));
+		});
 	},
 	render() {
 		let todos = this.getFilteredTodos();
 		document.getElementById('todo-list').innerHTML = this.todoTemplate(todos);
-		if(todos.length > 0) { document.getElementById('main').style.display = 'block' };
+		if(todos.length > 0) { document.getElementById('main').style.display = 'block' }
 		document.getElementById('toggle-all').checked = (this.getActiveTodos().length === 0);
 		this.renderFooter();
 		document.getElementById('new-todo').focus();
@@ -84,7 +110,7 @@ let App = {
 		});
 
 		let footer = document.getElementById('footer');
-		if(todoCount > 0) { footer.style.display = 'block' };
+		if(todoCount > 0) { footer.style.display = 'block' }
 		footer.innerHTML = template;
 	},
 	toggleAll(e) {
@@ -111,8 +137,7 @@ let App = {
 
 		return this.todos;
 	},
-	destroyCompleted(e) {
-		if(e.target.id !== 'clear-completed') return;
+	destroyCompleted() {
 		this.todos = this.getActiveTodos();
 		this.filter = 'all';
 		this.render();
@@ -144,13 +169,11 @@ let App = {
 		this.render();
 	},
 	toggle(e) {
-		if(!e.target.classList.contains('toggle')) return;
 		let i = this.indexFromEl(e.target);
 		this.todos[i].completed = !this.todos[i].completed;
 		this.render();
 	},
 	edit(e) {
-		if(e.target.tagName !== 'LABEL') return;
 		let li = e.target.closest('li');
 		li.classList.add('editing');
 		for(let i = 0; i < li.children.length; i++) {
@@ -162,7 +185,6 @@ let App = {
 	},
 	editKeyup(e) {
     let target = e.target;
-    if(!target.classList.contains('edit')) return;
     switch (e.which) {
       case ESCAPE_KEY:
         target.setAttribute('abort', true);
@@ -173,7 +195,6 @@ let App = {
 	},
 	update(e) {
 		let el = e.target;
-		if(!el.classList.contains('edit')) return;
 		let val = el.value.trim();
 
 		if (!val) {
