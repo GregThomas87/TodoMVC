@@ -10,8 +10,8 @@ jQuery(function ($) {
 	var util = {
 		uuid() {
 			/*jshint bitwise:false */
-			var i, random;
-			var uuid = '';
+			let i, random;
+			let uuid = '';
 
 			for (i = 0; i < 32; i++) {
 				random = Math.random() * 16 | 0;
@@ -30,17 +30,17 @@ jQuery(function ($) {
 			if (arguments.length > 1) {
 				return localStorage.setItem(namespace, JSON.stringify(data));
 			} else {
-				var store = localStorage.getItem(namespace);
+				let store = localStorage.getItem(namespace);
 				return (store && JSON.parse(store)) || [];
 			}
 		}
 	};
 
-	var App = {
+	let App = {
 		init() {
 			this.todos = util.store('todos-jquery');
-			this.todoTemplate = Handlebars.compile($('#todo-template').html());
-			this.footerTemplate = Handlebars.compile($('#footer-template').html());
+			this.todoTemplate = Handlebars.compile(document.getElementById('todo-template').text);
+			this.footerTemplate = Handlebars.compile(document.getElementById('footer-template').text);
 			this.bindEvents();
 
 			new Router({
@@ -62,28 +62,30 @@ jQuery(function ($) {
 				.on('click', '.destroy', this.destroy.bind(this));
 		},
 		render() {
-			var todos = this.getFilteredTodos();
-			$('#todo-list').html(this.todoTemplate(todos));
-			$('#main').toggle(todos.length > 0);
-			$('#toggle-all').prop('checked', this.getActiveTodos().length === 0);
+			let todos = this.getFilteredTodos();
+			document.getElementById('todo-list').innerHTML = this.todoTemplate(todos);
+			if(todos.length > 0) { document.getElementById('main').style.display = 'block' };
+			document.getElementById('toggle-all').checked = (this.getActiveTodos().length === 0);
 			this.renderFooter();
-			$('#new-todo').focus();
+			document.getElementById('new-todo').focus();
 			util.store('todos-jquery', this.todos);
 		},
 		renderFooter() {
-			var todoCount = this.todos.length;
-			var activeTodoCount = this.getActiveTodos().length;
-			var template = this.footerTemplate({
+			let todoCount = this.todos.length;
+			let activeTodoCount = this.getActiveTodos().length;
+			let template = this.footerTemplate({
 				activeTodoCount: activeTodoCount,
 				activeTodoWord: util.pluralize(activeTodoCount, 'item'),
 				completedTodos: todoCount - activeTodoCount,
 				filter: this.filter
 			});
 
-			$('#footer').toggle(todoCount > 0).html(template);
+			let footer = document.getElementById('footer');
+			if(todoCount > 0) { footer.style.display = 'block' };
+			footer.innerHTML = template;
 		},
 		toggleAll(e) {
-			var isChecked = $(e.target).prop('checked');
+			let isChecked = e.target.checked;
 
 			this.todos.forEach(todo => todo.completed = isChecked);
 
@@ -114,8 +116,8 @@ jQuery(function ($) {
 		// accepts an element from inside the `.item` div and
 		// returns the corresponding index in the `todos` array
 		indexFromEl(el) {
-			var id = $(el).closest('li').data('id');
-			var todos = this.todos;
+			let id = $(el).closest('li').data('id');
+			let todos = this.todos;
 			
       return todos.findIndex(todo => todo.id === id);
 		},
@@ -138,7 +140,7 @@ jQuery(function ($) {
 			this.render();
 		},
 		toggle(e) {
-			var i = this.indexFromEl(e.target);
+			let i = this.indexFromEl(e.target);
 			this.todos[i].completed = !this.todos[i].completed;
 			this.render();
 		},
